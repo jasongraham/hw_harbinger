@@ -37,7 +37,9 @@ def usage():
 
 def mail_send(student_email, student_name, classname, homeworkname, body):
 	p = os.popen('msmtp -t','w')
-	message = "To: " + student_email + "\nSubject: " + student_name + " " + classname + " " + homeworkname + " Grade\n\n" + body
+	message = ("To: " + student_email + "\nSubject: " + 
+	           student_name + " " + classname + " " + 
+		   homeworkname + " Grade\n\n" + body)
 	p.write(message)
 	p.close
 
@@ -46,8 +48,8 @@ if len(sys.argv) != 2: # the program name and the assignment number
 	usage()
 	sys.exit(2)
 
-points_col = 2 * (int(sys.argv[1]) - 1) + 3 # get the row that the points are in
-comment_col = points_col + 1		    # comments are in the next row
+points_col = 2 * (int(sys.argv[1]) - 1) + 3 # get the column that the points are in
+comment_col = points_col + 1		    # comments are in the next column
 
 #data = csv.reader(open('Gradebook.csv', 'rb'), delimiter=',', quotechar='"')
 data = csv.reader(open('testbook.csv', 'rb'), delimiter=',', quotechar='"')
@@ -60,9 +62,9 @@ for row in data:
 		maxpoints = row[points_col]
 
 		if debugging == 1:
-			print "What values are we getting?"
-			print "Classname: " + classname
-			print "Homeworkname: " + homeworkname
+			print("What values are we getting?")
+			print("Classname: " + classname)
+			print("Homeworkname: " + homeworkname)
 
 	else: # we're in the data section
 		student_name = row[0]
@@ -71,8 +73,11 @@ for row in data:
 		comment = row[comment_col]
 
 		# form the email body
-		body = "This is an automated email report of your grade on " + classname + " " +  homeworkname + ".\n\nYou received " + grade + " out of " + maxpoints + " points.  Additionally, the TA\nhad the following comments.\n\n" + comment
-		body = body + "\n\nIf you have a question, or this is not you, please send an email to " + grader_email + ".\n"
+		body =("This is an automated email report of your grade on " + classname +
+		       " " +  homeworkname + ".\n\nYou received " + grade + " out of " +
+		       maxpoints + " points.  Additionally, the TA\nhad the following comments.\n\n" +
+		       comment + "\n\nIf you have a question, or this is not you, please send an email to "
+		       + grader_email + ".\n")
 
 		if debugging == 1:
 			if 2 < data.line_num < 8: # only return the first few
