@@ -27,9 +27,16 @@ import sys
 import csv
 import smtplib
 
-debugging = 1 # set to 0 if not debugging
+#================================== Configuration Options ==========================================#
+
+debugging = 1 # Set to 0 if not debugging (when debugging, no mails are sent).
+	      # This option is mostly for making sure that the script parses
+	      # the gradebook file correctly.
+
 classname = "Class Name"
 grader_email = "me@example.edu"
+
+gradebook = "testbook.csv" # include the full path, if not in this directory
 
 
 # smtp server settings
@@ -40,6 +47,8 @@ AUTHREQUIRED = 0 # if you need to use smtp auth, set to 1
 smtpuser = "" # for SMTP AUTH, set SMTP username here
 smtppass = "" # for SMTP AUTH, set SMTP password here
 
+#============================= End configuration, Begin the script ==================================#
+
 def usage():
 	print("Usage: ./report_grades.py NUMBER, where NUMBER is the assignment number")
 	print("                                  of the grades that you want to send.\n\n")
@@ -49,7 +58,7 @@ def mail_send(grader_email, student_email, message):
 	if USE_SSL:
 		session = smtplib.SMTP_SSL(smtpserver)
 	else:
-		session = smtplib.SMTP_(smtpserver)
+		session = smtplib.SMTP(smtpserver)
 	if AUTHREQUIRED:
 		session.login(smtpuser, smtppass)
 	
@@ -75,8 +84,7 @@ if len(sys.argv) != 2: # the program name and the assignment number
 points_col = 2 * (int(sys.argv[1]) - 1) + 3 # get the column that the points are in
 comment_col = points_col + 1		    # comments are in the next column
 
-#data = csv.reader(open('Gradebook.csv', 'rb'), delimiter=',', quotechar='"')
-data = csv.reader(open('testbook.csv', 'rb'), delimiter=',', quotechar='"')
+data = csv.reader(open(gradebook, 'rb'), delimiter=',', quotechar='"')
 
 for row in data:
 	# our header in the first two rows contains information we need, strip it out
