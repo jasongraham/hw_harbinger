@@ -25,23 +25,47 @@
 
 import sys
 import csv
-import os
+import smtplib
 
-debugging = 0 # set to 0 if not debugging
+debugging = 1 # set to 0 if not debugging
 classname = "Class Name"
 grader_email = "me@example.edu"
+
+
+# smtp server settings
+smtpserver = "mail.example.edu:25"
+USE_SSL = 0 # switch to 1 if you want to connect with SSL
+
+AUTHREQUIRED = 0 # if you need to use smtp auth, set to 1
+smtpuser = "" # for SMTP AUTH, set SMTP username here
+smtppass = "" # for SMTP AUTH, set SMTP password here
 
 def usage():
 	print("Usage: ./report_grades.py NUMBER, where NUMBER is the assignment number")
 	print("                                  of the grades that you want to send.\n\n")
 
-def mail_send(student_email, student_name, classname, homeworkname, body):
-	p = os.popen('msmtp -t','w')
-	message = ("To: " + student_email + "\nSubject: " + 
-	           student_name + " " + classname + " " + 
-		   homeworkname + " Grade\n\n" + body)
-	p.write(message)
-	p.close
+def mail_send(grader_email, student_email, message):
+
+	if USE_SSL:
+		session = smtplib.SMTP_SSL(smtpserver)
+	else:
+		session = smtplib.SMTP_(smtpserver)
+	if AUTHREQUIRED:
+		session.login(smtpuser, smtppass)
+	
+	#check to see if any errors occured
+	smtpresult = session.sendmail(grader_email,student_email,message)
+
+	if smtpresult:
+		errstr = ""
+		for recip in smtpresult.keys():
+			errstr = ("Could not deliver mail to %s" + 
+				  "Server said %s" + "%s" + "%s" 
+				  % (recip, smtpresult[recip][0], smtpresult[recip][1], errstr))
+			raise smtplib.SMTPException, errstr
+	else: # if there were not errors, close the smtp session
+		session.quit()
+
 
 # Begin the main function
 if len(sys.argv) != 2: # the program name and the assignment number
@@ -73,7 +97,7 @@ for row in data:
 		comment = row[comment_col]
 
 		# form the email body
-		body =("This is an automated email report of your grade on " + classname +
+		body = ("This is an automated email report of your grade on " + classname +
 		       " " +  homeworkname + ".\n\nYou received " + grade + " out of " +
 		       maxpoints + " points.  Additionally, the TA\nhad the following comments.\n\n" +
 		       comment + "\n\nIf you have a question, or this is not you, please send an email to "
@@ -86,5 +110,9 @@ for row in data:
 				print(body)
 
 		else: # send the message
-			mail_send(student_email, student_name, classname, homeworkname, body)
+			message = ("To: " + student_email + "\r\nSubject: " + 
+				   student_name + " " + classname + " " + 
+				   homeworkname + " Grade\r\n\r\n" + body)
+
+			mail_send(grader_email, student_email.split(), message)
 
