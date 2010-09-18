@@ -38,6 +38,7 @@ grader_email = "me@example.edu"
 
 gradebook = "testbook.csv" # include the full path, if not in this directory
 
+FEEDBACK = 1 # enable feedback every 10 students
 
 # smtp server settings
 smtpserver = "mail.example.edu:25"
@@ -98,6 +99,9 @@ for row in data:
 			print("Classname: " + classname)
 			print("Homeworkname: " + homeworkname)
 
+	elif FEEDBACK and (not ((data.line_num+2) % 10)):
+		print("Reporting to student %d" % data.line_num + 2)
+
 	else: # we're in the data section
 		student_name = row[0]
 		student_email = row[1]
@@ -123,4 +127,7 @@ for row in data:
 				   homeworkname + " Grade\r\n\r\n" + body)
 
 			mail_send(grader_email, student_email.split(), message)
+
+if FEEDBACK:
+	print("\nFinished reporting\n\n")
 
