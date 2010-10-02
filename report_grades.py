@@ -99,10 +99,10 @@ for row in data:
 			print("Classname: " + classname)
 			print("Homeworkname: " + homeworkname)
 
-	elif FEEDBACK and (not ((data.line_num+2) % 10)):
-		print("Reporting to student %d" % data.line_num + 2)
-
 	else: # we're in the data section
+		if FEEDBACK and (not ((data.line_num + 2) % 10)):
+			print("Reporting to student " + str(data.line_num-2) + " ...")
+
 		student_name = row[0]
 		student_email = row[1]
 		grade = row[points_col]
