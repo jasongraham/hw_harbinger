@@ -100,7 +100,7 @@ for row in data:
 			print("Homeworkname: " + homeworkname)
 
 	else: # we're in the data section
-		if FEEDBACK and (not ((data.line_num + 2) % 10)):
+		if FEEDBACK and (not ((data.line_num - 2) % 10)):
 			print("Reporting to student " + str(data.line_num-2) + " ...")
 
 		student_name = row[0]
