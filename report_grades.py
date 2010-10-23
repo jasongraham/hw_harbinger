@@ -129,5 +129,6 @@ for row in data:
 			mail_send(grader_email, student_email.split(), message)
 
 if FEEDBACK:
-	print("\nFinished reporting\n\n")
+	print("\nFinished reporting to a total of " + str(data.line_num-2) + " students.\n")
 
+	
