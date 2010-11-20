@@ -49,3 +49,5 @@ If you have a question, or this is not you, please send an email to grader@examp
 ## License ##
 
 This program is [MIT][] licensed.
+
+[MIT]:http://en.wikipedia.org/wiki/MIT_License
