@@ -105,9 +105,9 @@ def main(args):
     for row in data:
         # our header in the first two rows contains information we need, strip it out
         if data.line_num == 1: # first row
-            homeworkname = row[points_col]
+            homeworkname = row[points_col].strip()
         elif data.line_num == 2: # second row
-            maxpoints = row[points_col]
+            maxpoints = row[points_col].strip()
 
             if debugging == 1:
                 print("What values are we getting?")
@@ -118,10 +118,10 @@ def main(args):
             if FEEDBACK and (not ((data.line_num - 2) % 10)):
                 print("Reporting to student " + str(data.line_num-2) + " ...")
 
-            student_name = row[0]
-            student_email = row[1]
-            grade = row[points_col]
-            comment = row[comment_col]
+            student_name = row[0].strip()
+            student_email = row[1].strip()
+            grade = row[points_col].strip()
+            comment = row[comment_col].strip()
 
             # form the email body
             body = ""
