@@ -38,6 +38,11 @@ grader_email = "me@example.edu"
 
 gradebook = "testbook.csv" # include the full path, if not in this directory
 
+messagefile = ""  # If you want to include a common message
+                                    # to all students at the beginning of every
+                                    # email, specify the file name here.
+                                    # Otherwise, leave as an empty string
+
 FEEDBACK = 1 # enable feedback every 10 students
 
 # smtp server settings
@@ -76,12 +81,28 @@ def mail_send(grader_email, student_email, message):
 	else: # if there were not errors, close the smtp session
 		session.quit()
 
+def prepend_message():
+
+        if messagefile != "":
+                try:
+                        handle = open(messagefile, "r")
+                except:
+                        print("Couldn't open the message file `"+messagefile
+                              +"`.  Exiting...")
+                        sys.exit(3)
+
+                message = handle.read()
+                handle.close()
+                return message
+
 
 def main(args):
         points_col = 2 * (int(args[1]) - 1) + 3 # get the column that the points are in
         comment_col = points_col + 1		    # comments are in the next column
 
         data = csv.reader(open(gradebook, 'rb'), delimiter=',', quotechar='"')
+
+        prepend = prepend_message()
 
         for row in data:
                 # our header in the first two rows contains information we need, strip it out
@@ -105,11 +126,19 @@ def main(args):
                         comment = row[comment_col]
 
                         # form the email body
-                        body = ("This is an automated email report of your grade on " + classname +
-                            " " +  homeworkname + ".\n\nYou received " + grade + " out of " +
-                            maxpoints + " points.  Additionally, the TA\nhad the following comments.\n\n" +
-                            comment + "\n\nIf you have a question, or this is not you, please send an email to "
-                            + grader_email + ".\n")
+                        body = ("This is an automated email report of your grade for " + classname +
+                            " " +  homeworkname + ".\n\n")
+                        if prepend:
+                            body += prepend + "\n\n"
+
+                        body += ("You received " + grade + " out of " + maxpoints + " points.")
+
+                        if len(comment) > 0:
+                            body += ("\n\nAddtionally, the TA had the following comments:\n\n"
+                                    + comment)
+
+                        body += ("\n\nIf you have a question, or my email script made a mistake,\n"
+                                + "please send me an email at " + grader_email + ".\n")
 
                         if debugging == 1:
                                 if 2 < data.line_num < 8: # only return the first few
