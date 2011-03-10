@@ -37,7 +37,7 @@ grader_email = "me@example.edu"
 
 gradebook = "testbook.csv" # include the full path, if not in this directory
 
-messagefile = ""  # If you want to include a common message
+messagefile = "common_message.txt"  # If you want to include a common message
                   # to all students at the beginning of every
                   # email, specify the file name here.
                   # Otherwise, leave as an empty string
@@ -124,11 +124,12 @@ def main(args):
             comment = row[comment_col]
 
             # form the email body
-            body = ("This is an automated email report of your grade for " + classname +
-                " " +  homeworkname + ".\n\n")
+            body = ""
             if prepend:
-                body += prepend + "\n\n"
+                body += prepend + "\n"
 
+            body += ("This is an automated email report of your grade for " + classname +
+                " " +  homeworkname + ".\n\n")
             body += ("You received " + grade + " out of " + maxpoints + " points.")
 
             if len(comment) > 0:
