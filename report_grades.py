@@ -10,8 +10,8 @@
 # This is a simple script which reads in a specifically formatted csv file,
 # in which the first two rows are labels and headers,
 #
-#       Name, Email, Assignment     , Assign. 1                , Comments on Assignment 1, Assign. 2	         , ...
-#	    ,      , Points Possible, <max points of Assign. 1>,                         , <max points Assign. 2>, ...
+#       Name, Email, Assignment     , Assign. 1        , Comments on Assignment 1, Assign. 2	     , ...
+#	    ,      , Points Possible, <max points of Assign. 1>,             , <max points Assign. 2>, ...
 #
 #
 #
@@ -19,9 +19,8 @@
 #
 #	Usage:
 #		./report_grades.py NUMBER, where NUMBER is the assignment number
-#			                   of the grades that you want to send.
+#			           of the grades that you want to send.
 #
-
 
 import sys
 import csv
@@ -39,9 +38,9 @@ grader_email = "me@example.edu"
 gradebook = "testbook.csv" # include the full path, if not in this directory
 
 messagefile = ""  # If you want to include a common message
-                                    # to all students at the beginning of every
-                                    # email, specify the file name here.
-                                    # Otherwise, leave as an empty string
+                  # to all students at the beginning of every
+                  # email, specify the file name here.
+                  # Otherwise, leave as an empty string
 
 FEEDBACK = 1 # enable feedback every 10 students
 
@@ -56,110 +55,110 @@ smtppass = "" # for SMTP AUTH, set SMTP password here
 #============================= End configuration, Begin the script ==================================#
 
 def usage():
-	print("Usage: ./report_grades.py NUMBER, where NUMBER is the assignment number")
-	print("                                  of the grades that you want to send.\n\n")
+    print("Usage: ./report_grades.py NUMBER, where NUMBER is the assignment number")
+    print("                                  of the grades that you want to send.\n\n")
 
 def mail_send(grader_email, student_email, message):
 
-	if USE_SSL:
-		session = smtplib.SMTP_SSL(smtpserver)
-	else:
-		session = smtplib.SMTP(smtpserver)
-	if AUTHREQUIRED:
-		session.login(smtpuser, smtppass)
+    if USE_SSL:
+        session = smtplib.SMTP_SSL(smtpserver)
+    else:
+        session = smtplib.SMTP(smtpserver)
+    if AUTHREQUIRED:
+        session.login(smtpuser, smtppass)
 
-	#check to see if any errors occured
-	smtpresult = session.sendmail(grader_email,student_email,message)
+    #check to see if any errors occured
+    smtpresult = session.sendmail(grader_email,student_email,message)
 
-	if smtpresult:
-		errstr = ""
-		for recip in smtpresult.keys():
-			errstr = ("Could not deliver mail to %s" +
-				  "Server said %s" + "%s" + "%s"
-				  % (recip, smtpresult[recip][0], smtpresult[recip][1], errstr))
-			raise smtplib.SMTPException, errstr
-	else: # if there were not errors, close the smtp session
-		session.quit()
+    if smtpresult:
+        errstr = ""
+        for recip in smtpresult.keys():
+            errstr = ("Could not deliver mail to %s" +
+                        "Server said %s" + "%s" + "%s"
+                        % (recip, smtpresult[recip][0], smtpresult[recip][1], errstr))
+            raise smtplib.SMTPException, errstr
+    else: # if there were not errors, close the smtp session
+        session.quit()
 
 def prepend_message():
 
-        if messagefile != "":
-                try:
-                        handle = open(messagefile, "r")
-                except:
-                        print("Couldn't open the message file `"+messagefile
-                              +"`.  Exiting...")
-                        sys.exit(3)
+    if messagefile != "":
+        try:
+            handle = open(messagefile, "r")
+        except:
+            print("Couldn't open the message file `"+messagefile +"`. Exiting.")
+            sys.exit(3)
 
-                message = handle.read()
-                handle.close()
-                return message
+        message = handle.read()
+        handle.close()
+        return message
 
 
 def main(args):
-        points_col = 2 * (int(args[1]) - 1) + 3 # get the column that the points are in
-        comment_col = points_col + 1		    # comments are in the next column
+    points_col = 2 * (int(args[1]) - 1) + 3 # get the column that the points are in
+    comment_col = points_col + 1	    # comments are in the next column
 
-        data = csv.reader(open(gradebook, 'rb'), delimiter=',', quotechar='"')
+    data = csv.reader(open(gradebook, 'rb'), delimiter=',', quotechar='"')
 
-        prepend = prepend_message()
+    prepend = prepend_message()
 
-        for row in data:
-                # our header in the first two rows contains information we need, strip it out
-                if data.line_num == 1: # first row
-                        homeworkname = row[points_col]
-                elif data.line_num == 2: # second row
-                        maxpoints = row[points_col]
+    for row in data:
+        # our header in the first two rows contains information we need, strip it out
+        if data.line_num == 1: # first row
+            homeworkname = row[points_col]
+        elif data.line_num == 2: # second row
+            maxpoints = row[points_col]
 
-                        if debugging == 1:
-                                print("What values are we getting?")
-                                print("Classname: " + classname)
-                                print("Homeworkname: " + homeworkname)
+            if debugging == 1:
+                print("What values are we getting?")
+                print("Classname: " + classname)
+                print("Homeworkname: " + homeworkname)
 
-                else: # we're in the data section
-                        if FEEDBACK and (not ((data.line_num - 2) % 10)):
-                                print("Reporting to student " + str(data.line_num-2) + " ...")
+        else: # we're in the data section
+            if FEEDBACK and (not ((data.line_num - 2) % 10)):
+                print("Reporting to student " + str(data.line_num-2) + " ...")
 
-                        student_name = row[0]
-                        student_email = row[1]
-                        grade = row[points_col]
-                        comment = row[comment_col]
+            student_name = row[0]
+            student_email = row[1]
+            grade = row[points_col]
+            comment = row[comment_col]
 
-                        # form the email body
-                        body = ("This is an automated email report of your grade for " + classname +
-                            " " +  homeworkname + ".\n\n")
-                        if prepend:
-                            body += prepend + "\n\n"
+            # form the email body
+            body = ("This is an automated email report of your grade for " + classname +
+                " " +  homeworkname + ".\n\n")
+            if prepend:
+                body += prepend + "\n\n"
 
-                        body += ("You received " + grade + " out of " + maxpoints + " points.")
+            body += ("You received " + grade + " out of " + maxpoints + " points.")
 
-                        if len(comment) > 0:
-                            body += ("\n\nAddtionally, the TA had the following comments:\n\n"
-                                    + comment)
+            if len(comment) > 0:
+                body += ("\n\nAddtionally, the TA had the following comments:\n\n"
+                    + comment)
 
-                        body += ("\n\nIf you have a question, or my email script made a mistake,\n"
-                                + "please send me an email at " + grader_email + ".\n")
+            body += ("\n\nIf you have a question, or my email script made a mistake,\n"
+                + "please send me an email at " + grader_email + ".\n")
 
-                        if debugging == 1:
-                                if 2 < data.line_num < 8: # only return the first few
+            if debugging == 1:
+                if 2 < data.line_num < 8: # only return the first few
 
-                                        # give an example of the email body to be sent
-                                        print(body)
+                    # give an example of the email body to be sent
+                    print(body)
 
-                        else: # send the message
-                                message = ("To: " + student_email + "\r\nSubject: " +
-                                        student_name + " " + classname + " " +
-                                        homeworkname + " Grade\r\n\r\n" + body)
+            else: # send the message
+                message = ("To: " + student_email + "\r\nSubject: " +
+                    student_name + " " + classname + " " +
+                    homeworkname + " Grade\r\n\r\n" + body)
 
-                                mail_send(grader_email, student_email.split(), message)
+                mail_send(grader_email, student_email.split(), message)
 
-        if FEEDBACK:
-                print("\nFinished reporting to a total of " + str(data.line_num-2) + " students.\n")
+    if FEEDBACK:
+        print("\nFinished reporting to a total of "+str(data.line_num-2)
+                +" students.\n")
 
 if __name__ == '__main__':
     if len(sys.argv) != 2: # the program name and the assignment number
-            usage()
-            sys.exit(2)
+        usage()
+        sys.exit(2)
     else:
         main(sys.argv)
 
