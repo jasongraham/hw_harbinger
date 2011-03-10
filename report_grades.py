@@ -77,58 +77,60 @@ def mail_send(grader_email, student_email, message):
 		session.quit()
 
 
-# Begin the main function
-if len(sys.argv) != 2: # the program name and the assignment number
-	usage()
-	sys.exit(2)
+def main(args):
+        points_col = 2 * (int(args[1]) - 1) + 3 # get the column that the points are in
+        comment_col = points_col + 1		    # comments are in the next column
 
-points_col = 2 * (int(sys.argv[1]) - 1) + 3 # get the column that the points are in
-comment_col = points_col + 1		    # comments are in the next column
+        data = csv.reader(open(gradebook, 'rb'), delimiter=',', quotechar='"')
 
-data = csv.reader(open(gradebook, 'rb'), delimiter=',', quotechar='"')
+        for row in data:
+                # our header in the first two rows contains information we need, strip it out
+                if data.line_num == 1: # first row
+                        homeworkname = row[points_col]
+                elif data.line_num == 2: # second row
+                        maxpoints = row[points_col]
 
-for row in data:
-	# our header in the first two rows contains information we need, strip it out
-	if data.line_num == 1: # first row
-		homeworkname = row[points_col]
-	elif data.line_num == 2: # second row
-		maxpoints = row[points_col]
+                        if debugging == 1:
+                                print("What values are we getting?")
+                                print("Classname: " + classname)
+                                print("Homeworkname: " + homeworkname)
 
-		if debugging == 1:
-			print("What values are we getting?")
-			print("Classname: " + classname)
-			print("Homeworkname: " + homeworkname)
+                else: # we're in the data section
+                        if FEEDBACK and (not ((data.line_num - 2) % 10)):
+                                print("Reporting to student " + str(data.line_num-2) + " ...")
 
-	else: # we're in the data section
-		if FEEDBACK and (not ((data.line_num - 2) % 10)):
-			print("Reporting to student " + str(data.line_num-2) + " ...")
+                        student_name = row[0]
+                        student_email = row[1]
+                        grade = row[points_col]
+                        comment = row[comment_col]
 
-		student_name = row[0]
-		student_email = row[1]
-		grade = row[points_col]
-		comment = row[comment_col]
+                        # form the email body
+                        body = ("This is an automated email report of your grade on " + classname +
+                            " " +  homeworkname + ".\n\nYou received " + grade + " out of " +
+                            maxpoints + " points.  Additionally, the TA\nhad the following comments.\n\n" +
+                            comment + "\n\nIf you have a question, or this is not you, please send an email to "
+                            + grader_email + ".\n")
 
-		# form the email body
-		body = ("This is an automated email report of your grade on " + classname +
-		       " " +  homeworkname + ".\n\nYou received " + grade + " out of " +
-		       maxpoints + " points.  Additionally, the TA\nhad the following comments.\n\n" +
-		       comment + "\n\nIf you have a question, or this is not you, please send an email to "
-		       + grader_email + ".\n")
+                        if debugging == 1:
+                                if 2 < data.line_num < 8: # only return the first few
 
-		if debugging == 1:
-			if 2 < data.line_num < 8: # only return the first few
+                                        # give an example of the email body to be sent
+                                        print(body)
 
-				# give an example of the email body to be sent
-				print(body)
+                        else: # send the message
+                                message = ("To: " + student_email + "\r\nSubject: " +
+                                        student_name + " " + classname + " " +
+                                        homeworkname + " Grade\r\n\r\n" + body)
 
-		else: # send the message
-			message = ("To: " + student_email + "\r\nSubject: " +
-				   student_name + " " + classname + " " +
-				   homeworkname + " Grade\r\n\r\n" + body)
+                                mail_send(grader_email, student_email.split(), message)
 
-			mail_send(grader_email, student_email.split(), message)
+        if FEEDBACK:
+                print("\nFinished reporting to a total of " + str(data.line_num-2) + " students.\n")
 
-if FEEDBACK:
-	print("\nFinished reporting to a total of " + str(data.line_num-2) + " students.\n")
-
+if __name__ == '__main__':
+    if len(sys.argv) != 2: # the program name and the assignment number
+            usage()
+            sys.exit(2)
+    else:
+        main(sys.argv)
 
