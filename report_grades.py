@@ -5,8 +5,6 @@
 # This script is used to report grades on specific assignments along with
 # individualized feedback comments to a large class via email.
 #
-# This script uses msmtp to send mail since I'm scared of the python.
-#
 # This is a simple script which reads in a specifically formatted csv file,
 # in which the first two rows are labels and headers,
 #
