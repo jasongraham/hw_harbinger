@@ -8,7 +8,7 @@
 # This script uses msmtp to send mail since I'm scared of the python.
 #
 # This is a simple script which reads in a specifically formatted csv file,
-# in which the first two rows are labels and headers, 
+# in which the first two rows are labels and headers,
 #
 #       Name, Email, Assignment     , Assign. 1                , Comments on Assignment 1, Assign. 2	         , ...
 #	    ,      , Points Possible, <max points of Assign. 1>,                         , <max points Assign. 2>, ...
@@ -62,15 +62,15 @@ def mail_send(grader_email, student_email, message):
 		session = smtplib.SMTP(smtpserver)
 	if AUTHREQUIRED:
 		session.login(smtpuser, smtppass)
-	
+
 	#check to see if any errors occured
 	smtpresult = session.sendmail(grader_email,student_email,message)
 
 	if smtpresult:
 		errstr = ""
 		for recip in smtpresult.keys():
-			errstr = ("Could not deliver mail to %s" + 
-				  "Server said %s" + "%s" + "%s" 
+			errstr = ("Could not deliver mail to %s" +
+				  "Server said %s" + "%s" + "%s"
 				  % (recip, smtpresult[recip][0], smtpresult[recip][1], errstr))
 			raise smtplib.SMTPException, errstr
 	else: # if there were not errors, close the smtp session
@@ -117,13 +117,13 @@ for row in data:
 
 		if debugging == 1:
 			if 2 < data.line_num < 8: # only return the first few
-				
+
 				# give an example of the email body to be sent
 				print(body)
 
 		else: # send the message
-			message = ("To: " + student_email + "\r\nSubject: " + 
-				   student_name + " " + classname + " " + 
+			message = ("To: " + student_email + "\r\nSubject: " +
+				   student_name + " " + classname + " " +
 				   homeworkname + " Grade\r\n\r\n" + body)
 
 			mail_send(grader_email, student_email.split(), message)
@@ -131,4 +131,4 @@ for row in data:
 if FEEDBACK:
 	print("\nFinished reporting to a total of " + str(data.line_num-2) + " students.\n")
 
-	
+
