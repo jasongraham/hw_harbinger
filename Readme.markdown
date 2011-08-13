@@ -23,7 +23,7 @@ Configuration is contained within the script.
 If you wanted to send the students feedback on their 2nd assignment
 (the 2nd one listed in their csv file), run
 
-`./report_grades.py 2`
+`./hw_harbinger.py 2`
 
 ## Example output ##
 

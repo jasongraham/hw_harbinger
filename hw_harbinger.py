@@ -16,7 +16,7 @@
 # starting with row three, the columns begin containing data.
 #
 #	Usage:
-#		./report_grades.py NUMBER, where NUMBER is the assignment number
+#		./hw_harbinger.py NUMBER, where NUMBER is the assignment number
 #			           of the grades that you want to send.
 #
 
@@ -53,7 +53,7 @@ smtppass = "" # for SMTP AUTH, set SMTP password here
 #============================= End configuration, Begin the script ==================================#
 
 def usage():
-    print("Usage: ./report_grades.py NUMBER, where NUMBER is the assignment number")
+    print("Usage: ./hw_harbinger.py NUMBER, where NUMBER is the assignment number")
     print("                                  of the grades that you want to send.\n\n")
 
 def mail_send(grader_email, student_email, message):
